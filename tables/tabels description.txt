@@ -1,0 +1,153 @@
+This SQL script creates a database schema for managing petrol station operations, including tables for tracking fuel prices, pump shifts, oil storage, expenses, customer data, and user activity. Here's a detailed breakdown:
+
+1. Table petrolprice:
+   - Stores fuel prices on different dates.
+   - Columns:
+     - date (TIMESTAMP): Date and time of the price record (Primary Key).
+     - solarprice, petrol80price, petrol92price, petrol95price (float): Prices of different types of fuel.
+
+2. Table dailyPumpshift:
+   - Records the details of each pump shift.
+   - Columns:
+     - id (INT, AUTO_INCREMENT): Unique identifier for each shift (Primary Key).
+     - date (TIMESTAMP): Date and time of the shift.
+     - pumpNumber (INT): Pump number.
+     - petrolType (VARCHAR(255)): Type of petrol.
+     - start_code, end_code (float): Starting and ending readings of the pump.
+
+3. View dailyPumpshift_liter:
+   - Creates a view to calculate the total liters dispensed during each shift.
+   - Columns include all columns from dailyPumpshift plus a calculated column total_liter which is the difference between start_code and end_code.
+
+4. Table oil:
+   - Stores different types of oil and their prices.
+   - Columns:
+     - oilName (VARCHAR(255)): Name of the oil (Primary Key).
+     - price (float): Price of the oil.
+
+5. Table oilshift:
+   - Records shifts related to oil inventory.
+   - Columns:
+     - date (TIMESTAMP): Date of the shift.
+     - StartTermBalance, endTermBalance (float): Starting and ending balances of oil.
+     - sold (INT): Quantity sold.
+     - price (float): Price of oil during the shift.
+     - oilname (VARCHAR(255)): Oil type (Foreign Key referencing oil).
+
+6. View totalprofit_view:
+   - Creates a view to calculate the total profit for each oil shift.
+   - Columns include all columns from oilshift plus a calculated column total_profit which is the difference between StartTermBalance and endTermBalance.
+
+7. Table OilStorage:
+   - Manages oil storage information.
+   - Columns:
+     - date (TIMESTAMP): Date of the record.
+     - beginingBalance, endingBalance (float): Beginning and ending balances.
+     - inboundtowarehouse (VARCHAR(255)): Description of inbound oil.
+     - oilname (VARCHAR(255)): Oil type (Foreign Key referencing oil).
+
+8. Table expenses:
+   - Tracks expenses.
+   - Columns:
+     - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+     - date (TIMESTAMP): Date of the expense.
+     - bond (VARCHAR(255)): Bond or reference for the expense.
+     - Amount (float): Amount of the expense.
+
+9. Table coupons:
+   - Stores details of issued coupons.
+   - Columns:
+     - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+     - date (TIMESTAMP): Date of coupon issuance.
+     - petrolType, Issuer, couponserial (VARCHAR(255)): Type of petrol, issuer, and serial number of the coupon.
+     - category (INT): Category of the coupon.
+     - price, total (float): Price and total value of the coupon.
+
+10. Table matchingcoupons:
+    - Tracks coupons matching specific criteria.
+    - Columns:
+      - date (TIMESTAMP): Date of record.
+      - Quantity (INT): Quantity of coupons.
+      - petrolType, issuer (VARCHAR(255)): Type of petrol and issuer of the coupons.
+      - category (INT): Category of the coupons.
+      - total (float): Total value of the coupons.
+
+11. Table customer:
+    - Stores customer details.
+    - Columns:
+      - name, national_ID, phone_number (VARCHAR(255)): Customer's name, national ID (Primary Key), and phone number.
+
+12. Table creditCustomer:
+    - Manages credit customers' transactions.
+    - Columns:
+      - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+      - date (TIMESTAMP): Date of the transaction.
+      - customer_NID (VARCHAR(255)): Customer's national ID (Foreign Key referencing customer).
+      - bond (VARCHAR(255)): Bond or reference for the transaction.
+      - Amount (float): Amount of credit.
+
+13. Table statement:
+    - Stores statements for cash movements.
+    - Columns:
+      - name (VARCHAR(255)): Name of the statement (Primary Key).
+
+14. Table CashMovement:
+    - Records cash movements.
+    - Columns:
+      - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+      - type (ENUM('مقبوضات', 'مدفوعات')): Type of movement (receipts or payments).
+      - date (TIMESTAMP): Date of the movement.
+      - bond (VARCHAR(255)): Bond or reference.
+      - Amount (float): Amount of money moved.
+
+15. Table CM_has_S:
+    - Links cash movements to statements.
+    - Columns:
+      - id_cm (INT): Cash movement ID (Foreign Key referencing CashMovement).
+      - name_S (VARCHAR(255)): Statement name (Foreign Key referencing statement).
+
+16. Table Employee:
+    - Stores employee details.
+    - Columns:
+      - id (INT, AUTO_INCREMENT): Employee ID (Primary Key).
+      - name, nationalID, phoneNumber, job (VARCHAR(255)): Employee's name, national ID, phone number, and job title.
+      - salary (float): Employee's salary.
+    - AUTO_INCREMENT starts from 100 for employee IDs.
+
+17. Table UserAccount:
+    - Manages user accounts.
+    - Columns:
+      - UserName (VARCHAR(255)): Username (Primary Key).
+      - Password (VARCHAR(255)): User's password.
+      - Role (VARCHAR(255)): User's role.
+
+18. Table loginHistory:
+    - Tracks login history.
+    - Columns:
+      - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+      - date (TIMESTAMP): Date of login.
+      - time (TIME): Time of login.
+      - softwareType (VARCHAR(255)): Type of software used.
+
+19. Table userA_has_loginHistory:
+    - Links user accounts to login history.
+    - Columns:
+      - User_Name (VARCHAR(255)): Username (Foreign Key referencing UserAccount).
+      - h_id (INT): Login history ID (Foreign Key referencing loginHistory).
+
+20. Table SystemActivity:
+    - Records system activities.
+    - Columns:
+      - id (INT, AUTO_INCREMENT): Unique identifier (Primary Key).
+      - date (TIMESTAMP): Date of the activity.
+      - ModDate (TIMESTAMP): Modification date.
+      - time (TIME): Time of the activity.
+      - Activity, softwareType (VARCHAR(255)): Description of the activity and software type.
+
+21. Table UserA_Has_SActivity:
+    - Links user accounts to system activities.
+    - Columns:
+      - UserName (VARCHAR(255)): Username (Foreign Key referencing UserAccount).
+      - a_id (INT): Activity ID (Foreign Key referencing SystemActivity).
+
+This schema provides a comprehensive structure for managing the operational data of a petrol station, ensuring detailed tracking of fuel and oil transactions, customer interactions, financial movements, and user activities.
